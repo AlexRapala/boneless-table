@@ -38,7 +38,6 @@
   "devDependencies": {
     "@tanstack/react-table": "^8.21.3",
     "@tanstack/react-virtual": "^3.14.10",
-    "@testing-library/jest-dom": "^7.0.1",
     "@testing-library/react": "^16.3.3",
     "@types/react": "^19.1.2",
     "@types/react-dom": "^19.1.2",
@@ -51,6 +50,6 @@
     "react-dom": "^19.1.0",
     "tsup": "^8.5.1",
     "typescript": "^5.8.3",
-    "vitest": "^4.1.11"
+    "vitest": "^5.0.0"
   }
 }
