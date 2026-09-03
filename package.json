@@ -1,0 +1,26 @@
+{
+  "name": "boneless-table-workspace",
+  "private": true,
+  "version": "0.0.0",
+  "engines": {
+    "node": ">=20"
+  },
+  "workspaces": [
+    "packages/*",
+    "docs",
+    "examples/*"
+  ],
+  "scripts": {
+    "build": "npm run build:package && npm run build:docs",
+    "build:package": "npm run build --workspace boneless-table",
+    "build:docs": "npm run build --workspace boneless-table-docs",
+    "dev": "npm run dev --workspace boneless-table-docs",
+    "lint": "npm run lint --workspace boneless-table && npm run lint --workspace boneless-table-docs",
+    "test": "npm run test --workspace boneless-table",
+    "format": "prettier --write .",
+    "format:check": "prettier --check ."
+  },
+  "devDependencies": {
+    "prettier": "^3.6.2"
+  }
+}
