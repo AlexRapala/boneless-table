@@ -19,6 +19,6 @@ jobs:
           node-version: 22.14.0
           registry-url: https://registry.npmjs.org
           package-manager-cache: false
-      - run: npm ci
+      - run: npm ci --include=optional
       - run: npm run build --workspace boneless-table
       - run: npm publish --workspace boneless-table --access public
