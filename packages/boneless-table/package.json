@@ -1,6 +1,6 @@
 {
   "name": "boneless-table",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "A typed, accessible, virtualized, unstyled data table renderer for React built on TanStack Table.",
   "license": "MIT",
   "repository": {
