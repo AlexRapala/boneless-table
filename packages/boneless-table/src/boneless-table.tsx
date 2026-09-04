@@ -276,6 +276,7 @@ export function BonelessTable<TData extends RowData>({
   const nearEndTriggeredRef = useRef(false)
   const columnMenuId = useId()
   const [showColumns, setShowColumns] = useState(false)
+  const [headerScrollbarInset, setHeaderScrollbarInset] = useState(0)
   const [sorting, setSorting] = useState<SortingState>(tableOptions.initialState?.sorting ?? [])
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>(
     tableOptions.initialState?.columnFilters ?? [],
@@ -308,6 +309,30 @@ export function BonelessTable<TData extends RowData>({
   useEffect(() => {
     if (scrollToTopOn !== undefined) scrollerRef.current?.scrollTo({ top: 0 })
   }, [scrollToTopOn])
+
+  useEffect(() => {
+    const scrollerElement = scrollerRef.current
+    if (!scrollerElement) return
+
+    const syncHeaderScrollbarInset = () => {
+      setHeaderScrollbarInset(
+        Math.max(0, scrollerElement.offsetWidth - scrollerElement.clientWidth),
+      )
+    }
+    syncHeaderScrollbarInset()
+
+    const resizeObserver =
+      typeof ResizeObserver === 'undefined'
+        ? undefined
+        : new ResizeObserver(syncHeaderScrollbarInset)
+    resizeObserver?.observe(scrollerElement)
+    window.addEventListener('resize', syncHeaderScrollbarInset)
+
+    return () => {
+      resizeObserver?.disconnect()
+      window.removeEventListener('resize', syncHeaderScrollbarInset)
+    }
+  }, [])
 
   const table = useReactTable({
     ...restTableOptions,
@@ -572,7 +597,9 @@ export function BonelessTable<TData extends RowData>({
     flex: '0 0 auto',
     minWidth: 0,
     overflow: 'hidden',
-    scrollbarGutter: 'stable',
+    // The body loses this space to a classic vertical scrollbar on Windows. Reserving the
+    // same width here keeps both horizontal scroll ranges identical at their far edge.
+    marginInlineEnd: `${headerScrollbarInset}px`,
   }
   const tableStyle: CSSProperties = {
     '--boneless-table-grid': grid,

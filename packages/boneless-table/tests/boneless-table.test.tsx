@@ -317,12 +317,27 @@ describe('BonelessTable behavior', () => {
     expect(scroller).toHaveAttribute('tabindex', '0')
     expect(headerGroup.parentElement).toBe(headerScroller)
     expect(rowGroup.parentElement).toBe(scroller)
-    expect(headerScroller.style.scrollbarGutter).toBe('stable')
     expect(scroller.style.scrollbarGutter).toBe('stable')
 
     scroller.scrollLeft = 72
     fireEvent.scroll(scroller)
     expect(headerScroller.scrollLeft).toBe(72)
+  })
+
+  it('matches the header viewport to a classic vertical scrollbar', () => {
+    const { container } = renderTable()
+    const scroller = container.querySelector('[data-slot="scroller"]') as HTMLDivElement
+    const headerScroller = container.querySelector(
+      '[data-slot="header-scroller"]',
+    ) as HTMLDivElement
+    Object.defineProperties(scroller, {
+      offsetWidth: { configurable: true, value: 480 },
+      clientWidth: { configurable: true, value: 463 },
+    })
+
+    fireEvent(window, new Event('resize'))
+
+    expect(headerScroller.style.marginInlineEnd).toBe('17px')
   })
 
   it('allows the default filter region to be replaced', () => {
