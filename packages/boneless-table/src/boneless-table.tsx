@@ -447,14 +447,17 @@ export function BonelessTable<TData extends RowData>({
     <div className={classNames.toolbarSummary} data-slot="toolbar-summary">
       <strong className={classNames.toolbarCount} data-slot="toolbar-count">
         {total.toLocaleString()}
-      </strong>
+      </strong>{' '}
       <span className={classNames.toolbarLabel} data-slot="toolbar-label">
         {resultLabel}
       </span>
       {resultHint ? (
-        <span className={classNames.toolbarHint} data-slot="toolbar-hint">
-          {resultHint}
-        </span>
+        <>
+          {' '}
+          <span className={classNames.toolbarHint} data-slot="toolbar-hint">
+            {resultHint}
+          </span>
+        </>
       ) : null}
     </div>
   )

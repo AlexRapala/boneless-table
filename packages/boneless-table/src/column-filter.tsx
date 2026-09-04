@@ -1,5 +1,5 @@
 import type { Column, RowData } from '@tanstack/react-table'
-import { useEffect, useState, type ReactNode } from 'react'
+import { useEffect, useRef, useState, type ReactNode } from 'react'
 import type { BonelessTableColumnSettings } from './settings'
 
 export function ColumnFilter<TData extends RowData>({
@@ -18,12 +18,14 @@ export function ColumnFilter<TData extends RowData>({
 }) {
   const value = String(column.getFilterValue() ?? '')
   const [inputValue, setInputValue] = useState(value)
+  const lastColumnValueRef = useRef(value)
 
   useEffect(() => {
-    setInputValue(value)
-  }, [value])
-
-  useEffect(() => {
+    if (value !== lastColumnValueRef.current) {
+      lastColumnValueRef.current = value
+      setInputValue(value)
+      return
+    }
     if (settings.type !== 'text' || inputValue === value) return
     if (debounceMs <= 0) {
       column.setFilterValue(inputValue || undefined)

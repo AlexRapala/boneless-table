@@ -1,4 +1,4 @@
-import { act, fireEvent, render, screen } from '@testing-library/react'
+import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { getCoreRowModel, type SortingState } from '@tanstack/react-table'
 import { useState, type ComponentProps } from 'react'
 import { describe, expect, it, vi } from 'vitest'
@@ -335,18 +335,15 @@ describe('BonelessTable behavior', () => {
     expect(screen.queryByRole('group', { name: 'Table filters' })).not.toBeInTheDocument()
   })
 
-  it('debounces text filters before recalculating the row model', () => {
-    vi.useFakeTimers()
+  it('debounces text filters before recalculating the row model', async () => {
     const { container } = render(
-      <BonelessTable data={rows} columns={columns} scroller="auto" filterDebounceMs={100} />,
+      <BonelessTable data={rows} columns={columns} scroller="auto" filterDebounceMs={20} />,
     )
     fireEvent.change(screen.getByRole('textbox', { name: 'Filter name' }), {
       target: { value: 'Ada' },
     })
     expect(container.querySelectorAll('[data-slot="row"]')).toHaveLength(3)
-    act(() => vi.advanceTimersByTime(100))
-    expect(container.querySelectorAll('[data-slot="row"]')).toHaveLength(1)
-    vi.useRealTimers()
+    await waitFor(() => expect(container.querySelectorAll('[data-slot="row"]')).toHaveLength(1))
   })
 
   it('calls controlled sorting callbacks without changing externally owned state', () => {
