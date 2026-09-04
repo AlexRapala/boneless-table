@@ -74,17 +74,15 @@ const themeIcons: BonelessTableIcons = {
 
 function mergeClassNames(overrides?: BonelessTableClassNames): BonelessTableClassNames {
   return Object.fromEntries(
-    new Set([...Object.keys(theme), ...Object.keys(overrides ?? {})])
-      .values()
-      .map((key) => [
-        key,
-        [
-          theme[key as keyof BonelessTableClassNames],
-          overrides?.[key as keyof BonelessTableClassNames],
-        ]
-          .filter(Boolean)
-          .join(' '),
-      ]),
+    Array.from(new Set([...Object.keys(theme), ...Object.keys(overrides ?? {})])).map((key) => [
+      key,
+      [
+        theme[key as keyof BonelessTableClassNames],
+        overrides?.[key as keyof BonelessTableClassNames],
+      ]
+        .filter(Boolean)
+        .join(' '),
+    ]),
   ) as BonelessTableClassNames
 }
 
