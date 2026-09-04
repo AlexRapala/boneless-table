@@ -12,7 +12,7 @@ export type BonelessTableColumnSettings = {
   align?: ColumnAlignment
   borders?: ColumnBorders
   sorting?: { enabled?: boolean; reveal?: RevealMode }
-  filtering?: { type: FilterType; options?: readonly string[]; reveal?: RevealMode }
+  filtering?: { type: FilterType; options?: readonly string[] }
   valueDisplay?: { truncateAt: number; suffix?: string }
 }
 
@@ -21,7 +21,7 @@ export type BonelessTableSettings = {
     sizing: Required<NonNullable<BonelessTableColumnSettings['sizing']>>
     sorting: Required<NonNullable<BonelessTableColumnSettings['sorting']>>
   }
-  interactions: { filterReveal: RevealMode; horizontalOverflow: 'auto' | 'scroll' }
+  interactions: { horizontalOverflow: 'auto' | 'scroll' }
 }
 
 export const defaultBonelessTableSettings: BonelessTableSettings = {
@@ -31,7 +31,7 @@ export const defaultBonelessTableSettings: BonelessTableSettings = {
     borders: 'none',
     sorting: { enabled: true, reveal: 'hover' },
   },
-  interactions: { filterReveal: 'hover', horizontalOverflow: 'auto' },
+  interactions: { horizontalOverflow: 'auto' },
 }
 
 export function mergeBonelessTableSettings(

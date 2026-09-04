@@ -45,14 +45,14 @@ const columns = [
   {
     accessorKey: 'name',
     header: 'Name',
-    meta: { bonelessTable: { filtering: { type: 'text', reveal: 'always' } } },
+    meta: { bonelessTable: { filtering: { type: 'text' } } },
   },
   {
     accessorKey: 'team',
     header: 'Team',
     meta: {
       bonelessTable: {
-        filtering: { type: 'select', options: ['Platform', 'Product'], reveal: 'always' },
+        filtering: { type: 'select', options: ['Platform', 'Product'] },
       },
     },
   },
@@ -71,7 +71,7 @@ describe('boneless-table utilities', () => {
     })
     expect(settings.columnDefaults.sizing).toEqual({ minPx: 200, flex: 1 })
     expect(settings.columnDefaults.sorting).toEqual({ enabled: true, reveal: 'always' })
-    expect(settings.interactions).toEqual({ filterReveal: 'hover', horizontalOverflow: 'scroll' })
+    expect(settings.interactions).toEqual({ horizontalOverflow: 'scroll' })
   })
 
   it('keeps its base object when no overrides are supplied', () => {
@@ -164,6 +164,14 @@ describe('BonelessTable behavior', () => {
       />,
     )
   }
+
+  it('renders the result count, label, and hint as separate themeable slots', () => {
+    const { container } = renderTable({ resultLabel: 'records', resultHint: 'Local example' })
+
+    expect(container.querySelector('[data-slot="toolbar-count"]')).toHaveTextContent('3')
+    expect(container.querySelector('[data-slot="toolbar-label"]')).toHaveTextContent('records')
+    expect(container.querySelector('[data-slot="toolbar-hint"]')).toHaveTextContent('Local example')
+  })
 
   it('sorts rows when an enabled header is activated', () => {
     renderTable()
@@ -269,6 +277,62 @@ describe('BonelessTable behavior', () => {
       target: { value: 'Product' },
     })
     expect(screen.getAllByRole('row')[1]).toHaveTextContent('Bryn')
+  })
+
+  it('renders filters outside the header and keeps sorting available', () => {
+    const { container } = renderTable({
+      columns: [
+        {
+          accessorKey: 'name',
+          header: 'Name',
+          meta: { bonelessTable: { filtering: { type: 'text' } } },
+        },
+      ],
+      icons: { search: <span>Search</span> },
+      filterPlacement: 'below',
+    })
+
+    const sortButton = screen.getByRole('button', { name: 'Name' })
+    const header = sortButton.closest('[role="columnheader"]')
+    const filterRegion = screen.getByRole('group', { name: 'Table filters' })
+    const table = container.querySelector('[data-slot="table"]')!
+    expect(header).toHaveAttribute('aria-sort', 'none')
+    expect(header?.querySelector('[data-slot="filter"]')).not.toBeInTheDocument()
+    expect(screen.getByRole('textbox', { name: 'Filter name' })).toBeInTheDocument()
+    expect(
+      table.compareDocumentPosition(filterRegion) & Node.DOCUMENT_POSITION_FOLLOWING,
+    ).toBeTruthy()
+    fireEvent.click(sortButton)
+    expect(header).toHaveAttribute('aria-sort', 'ascending')
+  })
+
+  it('separates the header from vertical scrolling and synchronizes only horizontal movement', () => {
+    const { container } = renderTable()
+    const scroller = container.querySelector('[data-slot="scroller"]') as HTMLDivElement
+    const headerScroller = container.querySelector(
+      '[data-slot="header-scroller"]',
+    ) as HTMLDivElement
+    const headerGroup = container.querySelector('[data-slot="header-group"]')!
+    const rowGroup = container.querySelector('[data-slot="row-group"]')!
+    expect(scroller).toHaveAttribute('tabindex', '0')
+    expect(headerGroup.parentElement).toBe(headerScroller)
+    expect(rowGroup.parentElement).toBe(scroller)
+    expect(headerScroller.style.scrollbarGutter).toBe('stable')
+    expect(scroller.style.scrollbarGutter).toBe('stable')
+
+    scroller.scrollLeft = 72
+    fireEvent.scroll(scroller)
+    expect(headerScroller.scrollLeft).toBe(72)
+  })
+
+  it('allows the default filter region to be replaced', () => {
+    renderTable({
+      filters: (table) => (
+        <div data-testid="custom-filters">{table.getState().columnFilters.length}</div>
+      ),
+    })
+    expect(screen.getByTestId('custom-filters')).toHaveTextContent('0')
+    expect(screen.queryByRole('group', { name: 'Table filters' })).not.toBeInTheDocument()
   })
 
   it('debounces text filters before recalculating the row model', () => {

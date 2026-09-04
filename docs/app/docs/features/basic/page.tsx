@@ -1,1 +1,1 @@
-export { default } from '../../../examples/simple/page'
+export { default } from '../../../features/basic/page'

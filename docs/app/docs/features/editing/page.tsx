@@ -1,1 +1,1 @@
-export { default } from '../../../examples/form-controls/page'
+export { default } from '../../../features/editing/page'

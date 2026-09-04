@@ -1,0 +1,9 @@
+#!/bin/sh
+
+set -eu
+
+git diff --cached --name-only --diff-filter=ACMR | while IFS= read -r file; do
+  [ -f "$file" ] || continue
+  npm exec --no -- prettier --write --ignore-unknown "$file"
+  git add -- "$file"
+done

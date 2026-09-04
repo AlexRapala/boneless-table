@@ -1,1 +1,1 @@
-export { default } from '../../../examples/accounts/page'
+export { default } from '../../../features/server-data/page'

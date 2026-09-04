@@ -1,1 +1,1 @@
-export { default } from '../../../examples/truncation/page'
+export { default } from '../../../features/value-display/page'

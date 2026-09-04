@@ -1,1 +1,1 @@
-export { default } from '../../../examples/grouped/page'
+export { default } from '../../../features/column-layout/page'

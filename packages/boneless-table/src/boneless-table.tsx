@@ -52,6 +52,8 @@ export type BonelessTableToolbarLayout<TData extends RowData> = (context: {
 export type BonelessTableSlot<TData extends RowData> =
   boolean | ReactNode | ((table: Table<TData>) => ReactNode)
 
+export type BonelessTableFilterPlacement = 'above' | 'below'
+
 export type BonelessTableRowClickEvent = MouseEvent<HTMLDivElement> | KeyboardEvent<HTMLDivElement>
 
 /**
@@ -61,15 +63,22 @@ export type BonelessTableClassNames = Partial<{
   root: string
   toolbar: string
   toolbarSummary: string
+  toolbarCount: string
+  toolbarLabel: string
   toolbarHint: string
   toolbarActions: string
   scroller: string
+  headerScroller: string
   table: string
   headerGroup: string
   headerRow: string
   header: string
   headerButton: string
+  headerLabel: string
   sortIndicator: string
+  filters: string
+  filterItem: string
+  filterLabel: string
   rowGroup: string
   row: string
   cell: string
@@ -122,6 +131,10 @@ export type BonelessTablePresentationOptions<TData extends RowData> = {
   toolbar?: BonelessTableSlot<TData>
   /** Reposition the default summary and action controls without rebuilding their behavior. */
   toolbarLayout?: BonelessTableToolbarLayout<TData>
+  /** Built-in filters, custom filter content, or a render function receiving the table instance. */
+  filters?: BonelessTableSlot<TData>
+  /** Places the filter region outside the table scroll area. Defaults to "above". */
+  filterPlacement?: BonelessTableFilterPlacement
   footer?: BonelessTableSlot<TData>
   totalCount?: number
   resultLabel?: string
@@ -239,6 +252,8 @@ export function BonelessTable<TData extends RowData>({
   scroller = 'auto',
   toolbar = true,
   toolbarLayout,
+  filters = true,
+  filterPlacement = 'above',
   footer = true,
   totalCount,
   resultLabel = 'rows',
@@ -256,11 +271,11 @@ export function BonelessTable<TData extends RowData>({
   const defaultOrder = useMemo(() => getColumnIds(resolvedColumns), [resolvedColumns])
   const scrollerRef = useRef<HTMLDivElement>(null)
   const headerScrollerRef = useRef<HTMLDivElement>(null)
+  const lastScrollLeftRef = useRef(0)
   const columnsButtonRef = useRef<HTMLButtonElement>(null)
   const nearEndTriggeredRef = useRef(false)
   const columnMenuId = useId()
   const [showColumns, setShowColumns] = useState(false)
-  const [headerScrollbarGutter, setHeaderScrollbarGutter] = useState(0)
   const [sorting, setSorting] = useState<SortingState>(tableOptions.initialState?.sorting ?? [])
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>(
     tableOptions.initialState?.columnFilters ?? [],
@@ -293,19 +308,6 @@ export function BonelessTable<TData extends RowData>({
   useEffect(() => {
     if (scrollToTopOn !== undefined) scrollerRef.current?.scrollTo({ top: 0 })
   }, [scrollToTopOn])
-
-  useEffect(() => {
-    const scroller = scrollerRef.current
-    if (!scroller) return
-    const syncHeaderScrollbarGutter = () => {
-      setHeaderScrollbarGutter(Math.max(0, scroller.offsetWidth - scroller.clientWidth))
-    }
-    syncHeaderScrollbarGutter()
-    if (typeof ResizeObserver === 'undefined') return
-    const observer = new ResizeObserver(syncHeaderScrollbarGutter)
-    observer.observe(scroller)
-    return () => observer.disconnect()
-  }, [])
 
   const table = useReactTable({
     ...restTableOptions,
@@ -379,14 +381,18 @@ export function BonelessTable<TData extends RowData>({
   function handleScroll() {
     const element = scrollerRef.current
     if (!element) return
-    if (headerScrollerRef.current) headerScrollerRef.current.scrollLeft = element.scrollLeft
+    if (element.scrollLeft !== lastScrollLeftRef.current) {
+      lastScrollLeftRef.current = element.scrollLeft
+      if (headerScrollerRef.current) headerScrollerRef.current.scrollLeft = element.scrollLeft
+    }
+    if (!onNearEnd) return
     const isNearEnd =
       element.scrollHeight - element.scrollTop - element.clientHeight < nearEndOffset
     if (!isNearEnd) {
       nearEndTriggeredRef.current = false
       return
     }
-    if (!onNearEnd || !canLoadMore || isFetchingMore || nearEndTriggeredRef.current) return
+    if (!canLoadMore || isFetchingMore || nearEndTriggeredRef.current) return
     nearEndTriggeredRef.current = true
     onNearEnd()
   }
@@ -439,7 +445,12 @@ export function BonelessTable<TData extends RowData>({
 
   const toolbarSummary = (
     <div className={classNames.toolbarSummary} data-slot="toolbar-summary">
-      <strong>{total.toLocaleString()}</strong> {resultLabel}
+      <strong className={classNames.toolbarCount} data-slot="toolbar-count">
+        {total.toLocaleString()}
+      </strong>
+      <span className={classNames.toolbarLabel} data-slot="toolbar-label">
+        {resultLabel}
+      </span>
       {resultHint ? (
         <span className={classNames.toolbarHint} data-slot="toolbar-hint">
           {resultHint}
@@ -499,6 +510,47 @@ export function BonelessTable<TData extends RowData>({
     </div>
   )
 
+  const filterHeaders = table
+    .getLeafHeaders()
+    .filter((header) => !header.isPlaceholder && getColumnSettings(header.column).filtering)
+  const defaultFilters =
+    filterHeaders.length > 0 ? (
+      <div
+        aria-label="Table filters"
+        className={classNames.filters}
+        data-slot="filters"
+        role="group"
+      >
+        {filterHeaders.map((header) => {
+          const filterSettings = getColumnSettings(header.column).filtering!
+          return (
+            <div
+              className={classNames.filterItem}
+              data-column-id={header.column.id}
+              data-slot="filter-item"
+              key={header.id}
+            >
+              <span className={classNames.filterLabel} data-slot="filter-label">
+                {header.column.columnDef.meta?.columnLabel ??
+                  (typeof header.column.columnDef.header === 'string' ||
+                  typeof header.column.columnDef.header === 'number'
+                    ? String(header.column.columnDef.header)
+                    : header.column.id)}
+              </span>
+              <ColumnFilter
+                className={classNames.filter}
+                column={header.column}
+                settings={filterSettings}
+                icon={filterSettings.type === 'text' ? icons?.search : undefined}
+                debounceMs={filterDebounceMs}
+              />
+            </div>
+          )
+        })}
+      </div>
+    ) : null
+  const renderedFilters = renderSlot(filters, table, defaultFilters)
+
   const defaultFooter = (
     <footer className={classNames.footer} data-slot="footer">
       Showing {shown.toLocaleString()} of {total.toLocaleString()} {resultLabel}
@@ -510,7 +562,14 @@ export function BonelessTable<TData extends RowData>({
       : undefined
   const scrollerStyle: CSSProperties = {
     overflowX: settings.interactions.horizontalOverflow,
+    scrollbarGutter: 'stable',
     ...(scroller === 'fill' ? { flex: '1 1 auto', minHeight: 0, overflowY: 'auto' } : {}),
+  }
+  const headerScrollerStyle: CSSProperties = {
+    flex: '0 0 auto',
+    minWidth: 0,
+    overflow: 'hidden',
+    scrollbarGutter: 'stable',
   }
   const tableStyle: CSSProperties = {
     '--boneless-table-grid': grid,
@@ -522,6 +581,7 @@ export function BonelessTable<TData extends RowData>({
   return (
     <div className={cn(className, classNames.root)} data-slot="root" style={rootStyle}>
       {renderSlot(toolbar, table, defaultToolbar)}
+      {filterPlacement === 'above' ? renderedFilters : null}
       <div
         className={classNames.table}
         data-slot="table"
@@ -530,14 +590,10 @@ export function BonelessTable<TData extends RowData>({
         role="table"
       >
         <div
+          className={classNames.headerScroller}
           data-slot="header-scroller"
           ref={headerScrollerRef}
-          style={{
-            flex: '0 0 auto',
-            minWidth: 0,
-            overflow: 'hidden',
-            paddingInlineEnd: headerScrollbarGutter || undefined,
-          }}
+          style={headerScrollerStyle}
         >
           <div
             className={classNames.headerGroup}
@@ -587,7 +643,9 @@ export function BonelessTable<TData extends RowData>({
                           data-slot="header-button"
                           onClick={header.column.getToggleSortingHandler()}
                         >
-                          {flexRender(header.column.columnDef.header, header.getContext())}
+                          <span className={classNames.headerLabel} data-slot="header-label">
+                            {flexRender(header.column.columnDef.header, header.getContext())}
+                          </span>
                           {icons?.sort ? (
                             <span
                               className={classNames.sortIndicator}
@@ -602,22 +660,6 @@ export function BonelessTable<TData extends RowData>({
                       ) : (
                         flexRender(header.column.columnDef.header, header.getContext())
                       )}
-                      {!header.isPlaceholder && columnSettings.filtering ? (
-                        <div
-                          className={classNames.filter}
-                          data-slot="filter"
-                          data-reveal={
-                            columnSettings.filtering.reveal ?? settings.interactions.filterReveal
-                          }
-                        >
-                          <ColumnFilter
-                            column={header.column}
-                            settings={columnSettings.filtering}
-                            icon={icons?.search}
-                            debounceMs={filterDebounceMs}
-                          />
-                        </div>
-                      ) : null}
                     </div>
                   )
                 })}
@@ -626,11 +668,13 @@ export function BonelessTable<TData extends RowData>({
           </div>
         </div>
         <div
+          aria-label="Table rows"
           className={classNames.scroller}
           data-slot="scroller"
           ref={scrollerRef}
           onScroll={handleScroll}
           style={scrollerStyle}
+          tabIndex={0}
         >
           {isLoading ? (
             <TableSkeleton
@@ -782,6 +826,7 @@ export function BonelessTable<TData extends RowData>({
           ) : null}
         </div>
       </div>
+      {filterPlacement === 'below' ? renderedFilters : null}
       {renderSlot(footer, table, defaultFooter)}
     </div>
   )

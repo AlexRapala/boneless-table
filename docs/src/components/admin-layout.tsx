@@ -53,20 +53,23 @@ export function AdminLayout({ children }: AdminLayoutProps) {
 
   return (
     <main className="fixed inset-0 grid grid-rows-[auto_minmax(0,1fr)] overflow-hidden bg-white md:grid-cols-[15rem_minmax(0,1fr)] md:grid-rows-1">
-      <aside className="flex min-h-16 flex-row items-center overflow-y-auto border-b border-slate-200 bg-slate-50 px-3.5 py-2.5 md:flex-col md:items-stretch md:border-r md:border-b-0 md:px-3.5 md:pt-6 md:pb-3.5">
+      <aside className="flex min-h-16 min-w-0 flex-row items-center gap-2 overflow-x-auto overflow-y-hidden border-b border-slate-200 bg-slate-50 px-3 py-2 md:flex-col md:items-stretch md:gap-0 md:overflow-y-auto md:border-r md:border-b-0 md:px-3.5 md:pt-6 md:pb-3.5">
         <Link
           href="https://github.com/AlexRapala/boneless-table"
-          className="flex items-center gap-2.5 px-2.5 font-bold text-lg text-slate-800 no-underline md:pb-7.5"
+          className="flex shrink-0 items-center gap-2.5 px-1 text-base font-bold text-slate-800 no-underline md:px-2.5 md:pb-7.5"
         >
           <span className="grid size-7 place-items-center rounded-md bg-teal-700">
             <span className="size-3 rotate-45 border-3 border-white border-t-transparent" />
           </span>
-          <span>Boneless</span>
+          <span className="hidden sm:inline">Boneless</span>
         </Link>
-        <nav aria-label="Documentation navigation" className="space-y-5">
+        <nav
+          aria-label="Documentation navigation"
+          className="flex min-w-max items-center gap-1 md:block md:min-w-0 md:space-y-5"
+        >
           {navigation.map((group) => (
-            <div key={group.label}>
-              <p className="mb-2 ml-2.5 text-[11px] font-bold tracking-[0.08em] text-slate-400 uppercase">
+            <div className="flex items-center gap-1 md:block" key={group.label}>
+              <p className="mb-2 ml-2.5 hidden text-[11px] font-bold tracking-[0.08em] text-slate-400 uppercase md:block">
                 {group.label}
               </p>
               {group.links.map(({ href, label, icon: Icon }) => {
@@ -76,7 +79,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
                   <Link
                     href={href}
                     key={href}
-                    className={`flex min-h-10 w-full items-center gap-2.5 rounded-md px-2.5 py-2 text-left text-slate-600 no-underline hover:bg-slate-200 ${isActive ? 'bg-teal-100 font-bold text-teal-800' : ''}`}
+                    className={`flex min-h-9 w-auto shrink-0 items-center gap-2 rounded-md px-2.5 py-1.5 text-left text-sm whitespace-nowrap text-slate-600 no-underline hover:bg-slate-200 md:w-full md:gap-2.5 ${isActive ? 'bg-teal-100 font-bold text-teal-800' : ''}`}
                   >
                     <Icon size={17} />
                     <span>{label}</span>

@@ -1,1 +1,1 @@
-export { default } from '../../../examples/theme-lab/page'
+export { default } from '../../../features/virtualization/page'

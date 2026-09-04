@@ -5,6 +5,7 @@ import './types'
 export {
   BonelessTable,
   type BonelessTableClassNames,
+  type BonelessTableFilterPlacement,
   type BonelessTableIcons,
   type BonelessTableOptions,
   type BonelessTablePresentationOptions,

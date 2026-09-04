@@ -39,7 +39,7 @@ const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
   manualSorting
   manualFiltering
   onNearEnd={loadMore}
-  rowLink={{ component: Link, href: '/examples/accounts/{row.id}', label: (row) => \`Open \${row.name}\` }}
+  rowLink={{ component: Link, href: '/features/server-data/{row.id}', label: (row) => \`Open \${row.name}\` }}
   resultLabel="accounts"
   resultHint="Server-side results"
 />`
@@ -157,7 +157,7 @@ export function AdminTable() {
           header: 'Seats',
           meta: {
             bonelessTable: {
-              sizing: { minPx: 82, flex: 0.55 },
+              sizing: { minPx: 120, flex: 0.55 },
               align: 'right',
               filtering: { type: 'text' },
             },
@@ -279,7 +279,7 @@ export function AdminTable() {
         scrollToTopOn={JSON.stringify({ sorting, columnFilters })}
         rowLink={{
           component: Link,
-          href: '/examples/accounts/{row.id}',
+          href: '/features/server-data/{row.id}',
           label: (account) => `Open ${account.name}'s account details`,
         }}
       />

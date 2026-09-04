@@ -1,1 +1,1 @@
-export { default } from '../../../examples/family-tree/page'
+export { default } from '../../../features/expanding/page'

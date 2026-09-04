@@ -12,8 +12,20 @@ type Account = {
 }
 
 const columns = defineColumns<Account>([
-  { key: 'name', header: 'Account' },
-  { key: 'plan', header: 'Plan' },
+  {
+    key: 'name',
+    header: 'Account',
+    meta: { bonelessTable: { filtering: { type: 'text' } } },
+  },
+  {
+    key: 'plan',
+    header: 'Plan',
+    meta: {
+      bonelessTable: {
+        filtering: { type: 'select', options: ['Enterprise', 'Growth', 'Team'] },
+      },
+    },
+  },
   {
     key: 'spend',
     header: 'Monthly spend',
@@ -95,12 +107,26 @@ const apiGroups = [
   ['State', 'state, initialState, sorting, filters, visibility, order, expansion'],
   ['Async data', 'manualSorting, manualFiltering, onNearEnd, canLoadMore, totalCount'],
   ['Rows', 'onRowClick, rowLink, tree, virtualization, scroller'],
-  ['Composition', 'toolbar, toolbarLayout, footer, defaultColumn, meta'],
+  ['Composition', 'toolbar, toolbarLayout, filters, filterPlacement, footer, defaultColumn, meta'],
 ] as const
 
 const previewColumns = [
-  { key: 'account', header: 'Account', settings: { sizing: { minPx: 170, flex: 1.4 } } },
-  { key: 'plan', header: 'Plan', settings: { sizing: { minPx: 120 } } },
+  {
+    key: 'account',
+    header: 'Account',
+    settings: { sizing: { minPx: 170, flex: 1.4 }, filtering: { type: 'text' as const } },
+  },
+  {
+    key: 'plan',
+    header: 'Plan',
+    settings: {
+      sizing: { minPx: 120 },
+      filtering: {
+        type: 'select' as const,
+        options: ['Enterprise', 'Growth', 'Team'] as string[],
+      },
+    },
+  },
   {
     key: 'spend',
     header: 'Monthly spend',
@@ -126,24 +152,24 @@ export default function DocumentationPage() {
   return (
     <AdminPage title="boneless-table">
       <article className="mx-auto max-w-4xl pb-16">
-        <p className="max-w-3xl border-b border-slate-200 pb-8 text-base leading-7 text-slate-600">
+        <p className="max-w-3xl border-b border-slate-200 pb-7 leading-6 text-slate-600">
           A typed React renderer built on TanStack Table and TanStack Virtual. It provides table
           mechanics, accessible controls, and stable structural hooks while leaving the visual
           system to your application.
         </p>
 
         <section className="pt-9" id="installation">
-          <h2 className="text-2xl font-bold tracking-tight text-slate-950">Installation</h2>
-          <p className="mt-3 leading-7 text-slate-600">
+          <h2 className="text-xl font-bold tracking-tight text-slate-950">Installation</h2>
+          <p className="mt-2 leading-6 text-slate-600">
             Install the package in a React application. TanStack Table and Virtual are included as
             dependencies; React and React DOM are peer dependencies.
           </p>
           <CodeBlock>npm install boneless-table</CodeBlock>
         </section>
 
-        <section className="pt-11" id="quick-start">
-          <h2 className="text-2xl font-bold tracking-tight text-slate-950">Quick start</h2>
-          <p className="mt-3 leading-7 text-slate-600">
+        <section className="pt-9" id="quick-start">
+          <h2 className="text-xl font-bold tracking-tight text-slate-950">Quick start</h2>
+          <p className="mt-2 leading-6 text-slate-600">
             Define columns outside the component when possible, then pass rows directly to{' '}
             <code className="rounded bg-slate-100 px-1.5 py-0.5 text-[0.9em]">BonelessTable</code>.
             Column presentation belongs in{' '}
@@ -155,9 +181,9 @@ export default function DocumentationPage() {
           <CodeBlock>{quickStart}</CodeBlock>
         </section>
 
-        <section className="pt-11" id="live-example">
-          <h2 className="text-2xl font-bold tracking-tight text-slate-950">Live example</h2>
-          <p className="mt-3 mb-6 leading-7 text-slate-600">
+        <section className="pt-9" id="live-example">
+          <h2 className="text-xl font-bold tracking-tight text-slate-950">Live example</h2>
+          <p className="mt-2 mb-5 leading-6 text-slate-600">
             This table uses the same three-column configuration shown above. Header sorting and the
             built-in column controls are enabled by default.
           </p>
@@ -165,13 +191,13 @@ export default function DocumentationPage() {
             columns={previewColumns}
             rows={previewRows}
             title="Accounts"
-            description="Local data with default sorting and right-aligned numeric values."
+            description="Filter Account or Plan from the labeled controls above the table. Header sorting and right-aligned numeric values remain independent."
           />
         </section>
 
-        <section className="pt-11" id="feature-guides">
-          <h2 className="text-2xl font-bold tracking-tight text-slate-950">Feature guides</h2>
-          <p className="mt-3 max-w-3xl leading-7 text-slate-600">
+        <section className="pt-9" id="feature-guides">
+          <h2 className="text-xl font-bold tracking-tight text-slate-950">Feature guides</h2>
+          <p className="mt-2 max-w-3xl leading-6 text-slate-600">
             Each guide contains a focused live example, the relevant configuration, and copyable
             source code.
           </p>
@@ -184,7 +210,10 @@ export default function DocumentationPage() {
                 <ul className="divide-y divide-slate-100">
                   {group.guides.map((guide) => (
                     <li className="grid gap-1 py-3.5 sm:grid-cols-[11rem_1fr]" key={guide.href}>
-                      <Link className="font-bold text-teal-700 no-underline hover:underline" href={guide.href}>
+                      <Link
+                        className="font-bold text-teal-700 no-underline hover:underline"
+                        href={guide.href}
+                      >
                         {guide.title}
                       </Link>
                       <span className="leading-6 text-slate-500">{guide.description}</span>
@@ -196,11 +225,13 @@ export default function DocumentationPage() {
           </div>
         </section>
 
-        <section className="pt-11" id="api-reference">
-          <h2 className="text-2xl font-bold tracking-tight text-slate-950">API overview</h2>
-          <p className="mt-3 max-w-3xl leading-7 text-slate-600">
+        <section className="pt-9" id="api-reference">
+          <h2 className="text-xl font-bold tracking-tight text-slate-950">API overview</h2>
+          <p className="mt-2 max-w-3xl leading-6 text-slate-600">
             Props are grouped below by the concern they control. The feature guides show how these
-            options work together in complete table configurations.
+            options work together in complete table configurations. Filters default to a labeled
+            region above the scroll area; use <code>filterPlacement</code> to move them below, or
+            pass a render function to <code>filters</code> for a completely custom arrangement.
           </p>
           <dl className="mt-6 divide-y divide-slate-200 border-y border-slate-200">
             {apiGroups.map(([name, values]) => (
@@ -212,9 +243,9 @@ export default function DocumentationPage() {
           </dl>
         </section>
 
-        <section className="pt-11" id="tanstack-table">
-          <h2 className="text-2xl font-bold tracking-tight text-slate-950">TanStack Table</h2>
-          <p className="mt-3 leading-7 text-slate-600">
+        <section className="pt-9" id="tanstack-table">
+          <h2 className="text-xl font-bold tracking-tight text-slate-950">TanStack Table</h2>
+          <p className="mt-2 leading-6 text-slate-600">
             For details about row models, column definitions, state semantics, sorting functions,
             and filter functions, refer to the{' '}
             <a
