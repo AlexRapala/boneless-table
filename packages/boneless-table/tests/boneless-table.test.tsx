@@ -167,9 +167,11 @@ describe('BonelessTable behavior', () => {
 
   it('sorts rows when an enabled header is activated', () => {
     renderTable()
-    fireEvent.click(screen.getByRole('button', { name: 'Score' }))
+    const scoreHeader = screen.getByRole('button', { name: 'Score' })
+    expect(scoreHeader).toHaveAttribute('data-align', 'right')
+    fireEvent.click(scoreHeader)
     expect(screen.getAllByRole('row')[1]).toHaveTextContent('Ada')
-    fireEvent.click(screen.getByRole('button', { name: 'Score' }))
+    fireEvent.click(scoreHeader)
     expect(screen.getAllByRole('row')[1]).toHaveTextContent('Bryn')
   })
 

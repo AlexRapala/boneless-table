@@ -12,13 +12,39 @@ jobs:
   publish:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - uses: actions/setup-node@v6
         with:
-          # npm trusted publishing requires Node 22.14+ and npm 11.5.1+.
-          node-version: 22.14.0
+          # Node 24 includes an npm version compatible with trusted publishing.
+          node-version: 24
           registry-url: https://registry.npmjs.org
           package-manager-cache: false
-      - run: npm ci --include=optional
-      - run: npm run build --workspace boneless-table
-      - run: npm publish --workspace boneless-table --access public
+
+      - name: Validate release tag
+        id: package
+        run: |
+          VERSION="$(node -p "require('./packages/boneless-table/package.json').version")"
+          if [ "v${VERSION}" != "${GITHUB_REF_NAME}" ]; then
+            echo "Release tag ${GITHUB_REF_NAME} does not match package version ${VERSION}." >&2
+            exit 1
+          fi
+          echo "version=${VERSION}" >> "${GITHUB_OUTPUT}"
+
+      - name: Check whether version is already published
+        id: registry
+        run: |
+          if npm view "boneless-table@${{ steps.package.outputs.version }}" version >/dev/null 2>&1; then
+            echo "published=true" >> "${GITHUB_OUTPUT}"
+          else
+            echo "published=false" >> "${GITHUB_OUTPUT}"
+          fi
+
+      - if: steps.registry.outputs.published != 'true'
+        run: npm ci --include=optional
+      - if: steps.registry.outputs.published != 'true'
+        run: npm run build --workspace boneless-table
+      - if: steps.registry.outputs.published != 'true'
+        run: npm publish --workspace boneless-table --access public
+
+      - if: steps.registry.outputs.published == 'true'
+        run: echo "boneless-table@${{ steps.package.outputs.version }} is already published; skipping."

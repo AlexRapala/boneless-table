@@ -33,9 +33,9 @@ const theme: BonelessTableClassNames = {
   header:
     'group relative flex min-w-0 items-center px-2.5 py-2.5 data-[align=right]:justify-end data-[borders=left]:border-l data-[borders=right]:border-r data-[borders=both]:border-x data-[borders=left]:border-slate-200 data-[borders=right]:border-slate-200 data-[borders=both]:border-slate-200',
   headerButton:
-    'relative flex min-w-0 w-full items-center border-0 bg-transparent p-0 text-left text-xs font-bold text-slate-600',
+    'relative flex min-w-0 w-full items-center border-0 bg-transparent p-0 text-left text-xs font-bold text-slate-600 data-[align=right]:flex-row-reverse data-[align=right]:text-right',
   sortIndicator:
-    'ml-auto grid place-items-center text-slate-400 opacity-0 transition-opacity group-hover:opacity-100 group-focus-within:opacity-100 data-[reveal=always]:opacity-100',
+    'ml-auto grid place-items-center text-slate-400 opacity-0 transition-opacity group-hover:opacity-100 group-focus-within:opacity-100 data-[reveal=always]:opacity-100 data-[align=right]:mr-1 data-[align=right]:ml-0',
   row: 'min-h-14.5 border-b border-slate-100 hover:bg-slate-50/60',
   cell: 'flex min-w-0 items-center overflow-hidden px-2.5 py-2 text-ellipsis whitespace-nowrap text-slate-600 data-[align=right]:justify-end data-[align=right]:text-right data-[borders=left]:border-l data-[borders=right]:border-r data-[borders=both]:border-x data-[borders=left]:border-slate-200 data-[borders=right]:border-slate-200 data-[borders=both]:border-slate-200 [&_[data-slot=tree-content]]:flex [&_[data-slot=tree-content]]:min-w-0 [&_[data-slot=tree-content]]:items-center [&_[data-slot=tree-row-toggle]]:grid [&_[data-slot=tree-row-toggle]]:size-5 [&_[data-slot=tree-row-toggle]]:shrink-0 [&_[data-slot=tree-row-toggle]]:place-items-center [&_[data-slot=tree-row-toggle]]:border-0 [&_[data-slot=tree-row-toggle]]:bg-transparent [&_[data-slot=tree-row-toggle]]:p-0 [&_[data-slot=tree-row-toggle]]:text-slate-500 [&_[data-slot=tree-row-toggle-spacer]]:inline-block [&_[data-slot=tree-row-toggle-spacer]]:size-5 [&_[data-slot=tree-row-toggle-spacer]]:shrink-0 [&_[data-slot=tree-value]]:min-w-0 [&_[data-slot=tree-value]]:overflow-hidden [&_[data-slot=tree-value]]:text-ellipsis',
   footer: 'flex min-h-11 items-center border-t border-slate-200 px-4.5 text-xs text-slate-500',

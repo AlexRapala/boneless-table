@@ -583,6 +583,7 @@ export function BonelessTable<TData extends RowData>({
                       {header.isPlaceholder ? null : isSortable ? (
                         <button
                           className={classNames.headerButton}
+                          data-align={columnSettings.align}
                           data-slot="header-button"
                           onClick={header.column.getToggleSortingHandler()}
                         >
@@ -590,6 +591,7 @@ export function BonelessTable<TData extends RowData>({
                           {icons?.sort ? (
                             <span
                               className={classNames.sortIndicator}
+                              data-align={columnSettings.align}
                               data-slot="sort-indicator"
                               data-reveal={columnSettings.sorting.reveal}
                             >

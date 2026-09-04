@@ -66,9 +66,9 @@ const themes: Record<Theme, BonelessTableClassNames> = {
     headerRow: 'border-b border-slate-200',
     header: 'group relative flex min-w-0 items-center px-4 py-3 data-[align=right]:justify-end',
     headerButton:
-      'flex w-full items-center gap-1 border-0 bg-transparent p-0 text-left text-xs font-bold tracking-wide text-slate-500 uppercase',
+      'flex w-full items-center gap-1 border-0 bg-transparent p-0 text-left text-xs font-bold tracking-wide text-slate-500 uppercase data-[align=right]:flex-row-reverse data-[align=right]:text-right',
     sortIndicator:
-      'ml-auto text-indigo-500 opacity-0 transition-opacity group-hover:opacity-100 group-focus-within:opacity-100 data-[reveal=always]:opacity-100',
+      'ml-auto text-indigo-500 opacity-0 transition-opacity group-hover:opacity-100 group-focus-within:opacity-100 data-[reveal=always]:opacity-100 data-[align=right]:mr-1 data-[align=right]:ml-0',
     row: 'min-h-16 border-b border-slate-100 transition-colors hover:bg-indigo-50/60 focus-visible:bg-indigo-50',
     cell: 'flex min-w-0 items-center overflow-hidden px-4 py-3 text-sm text-slate-700 data-[align=right]:justify-end data-[align=right]:text-right',
     footer: 'border-t border-slate-100 px-5 py-3 text-xs text-slate-500',
@@ -92,9 +92,9 @@ const themes: Record<Theme, BonelessTableClassNames> = {
     header:
       'group relative flex min-w-0 items-center border-r-2 border-slate-950 px-4 py-3 last:border-r-0 data-[align=right]:justify-end',
     headerButton:
-      'flex w-full items-center gap-1 border-0 bg-transparent p-0 text-left font-mono text-xs font-black tracking-wide uppercase text-slate-950',
+      'flex w-full items-center gap-1 border-0 bg-transparent p-0 text-left font-mono text-xs font-black tracking-wide uppercase text-slate-950 data-[align=right]:flex-row-reverse data-[align=right]:text-right',
     sortIndicator:
-      'ml-auto opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 data-[reveal=always]:opacity-100',
+      'ml-auto opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 data-[reveal=always]:opacity-100 data-[align=right]:mr-1 data-[align=right]:ml-0',
     row: 'min-h-16 border-b-2 border-slate-950 bg-[#fff8e7] hover:bg-[#d6f5ff] focus-visible:bg-[#d6f5ff]',
     cell: 'flex min-w-0 items-center overflow-hidden border-r border-slate-950 px-4 py-3 font-mono text-sm text-slate-950 last:border-r-0 data-[align=right]:justify-end data-[align=right]:text-right',
     footer:
